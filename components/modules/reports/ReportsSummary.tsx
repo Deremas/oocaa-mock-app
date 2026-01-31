@@ -6,8 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { statusBadgeClass } from "@/lib/ui/status";
+import { kpiCardClass, kpiIcon, kpiIconClass } from "@/lib/ui/kpi";
 
-type Branch = { id: string; name: string };
+type Branch = { id: string; name: string; isActive?: boolean };
 
 type ReportPayload = {
   totalsByStatus: Array<{ status: string; _count: { status: number } }>;
@@ -22,6 +25,7 @@ export function ReportsSummary({
   branches: Branch[];
   showBranch: boolean;
 }) {
+  const activeBranches = branches.filter((branch) => branch.isActive !== false);
   const [filters, setFilters] = useState({
     dateFrom: "",
     dateTo: "",
@@ -78,7 +82,7 @@ export function ReportsSummary({
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-3 md:grid-cols-4">
+      <div className="grid gap-3 rounded-lg border border-slate-200 bg-slate-100 p-4 md:grid-cols-4">
         <div>
           <label className="text-xs text-muted-foreground">From</label>
           <Input
@@ -103,7 +107,7 @@ export function ReportsSummary({
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
-                {branches.map((branch) => (
+                {activeBranches.map((branch) => (
                   <SelectItem key={branch.id} value={branch.id}>
                     {branch.name}
                   </SelectItem>
@@ -112,19 +116,25 @@ export function ReportsSummary({
             </Select>
           </div>
         ) : null}
-        <div className="flex items-end gap-2">
-          <Button onClick={fetchSummary}>Apply</Button>
-          <Button variant="outline" onClick={exportCsv}>
-            Export CSV
-          </Button>
-        </div>
+      <div className="flex items-end gap-2">
+        <Button onClick={fetchSummary}>Apply</Button>
+        <Button variant="outline" onClick={exportCsv}>
+          Export CSV
+        </Button>
+      </div>
       </div>
 
-      <Card>
+      <Card className={kpiCardClass("total")}>
         <CardHeader>
           <CardTitle>Total Documents</CardTitle>
         </CardHeader>
-        <CardContent className="text-3xl font-semibold">{data.totalCount}</CardContent>
+        <CardContent className="flex items-center justify-between">
+          <div className="text-3xl font-bold">{data.totalCount}</div>
+          {(() => {
+            const Icon = kpiIcon("total");
+            return <Icon className={`h-6 w-6 ${kpiIconClass("total")}`} />;
+          })()}
+        </CardContent>
       </Card>
 
       <Card>
@@ -136,14 +146,16 @@ export function ReportsSummary({
             <TableHeader>
               <TableRow>
                 <TableHead>Status</TableHead>
-                <TableHead>Total</TableHead>
+                <TableHead className="text-right">Total</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data.totalsByStatus.map((item) => (
                 <TableRow key={item.status}>
-                  <TableCell>{item.status}</TableCell>
-                  <TableCell>{item._count.status}</TableCell>
+                  <TableCell>
+                    <Badge className={statusBadgeClass(item.status)}>{item.status}</Badge>
+                  </TableCell>
+                  <TableCell className="text-right">{item._count.status}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -158,17 +170,17 @@ export function ReportsSummary({
           </CardHeader>
           <CardContent>
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Branch</TableHead>
-                  <TableHead>Total</TableHead>
-                </TableRow>
-              </TableHeader>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Branch</TableHead>
+                <TableHead className="text-right">Total</TableHead>
+              </TableRow>
+            </TableHeader>
               <TableBody>
                 {data.totalsByBranch.map((item) => (
                   <TableRow key={item.branchId}>
                     <TableCell>{branches.find((b) => b.id === item.branchId)?.name ?? item.branchId}</TableCell>
-                    <TableCell>{item._count.branchId}</TableCell>
+                    <TableCell className="text-right">{item._count.branchId}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

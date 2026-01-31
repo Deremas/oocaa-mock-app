@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type Props = {
-  branches: { id: string; name: string }[];
+  branches: { id: string; name: string; isActive?: boolean }[];
   showBranch: boolean;
   initial?: { q?: string; status?: string; branchId?: string; dateFrom?: string; dateTo?: string };
 };
@@ -19,9 +19,10 @@ export function DocumentFilters({ branches, showBranch, initial }: Props) {
   const [branchId, setBranchId] = useState(initial?.branchId ?? "");
   const [dateFrom, setDateFrom] = useState(initial?.dateFrom ?? "");
   const [dateTo, setDateTo] = useState(initial?.dateTo ?? "");
+  const activeBranches = branches.filter((branch) => branch.isActive !== false);
 
   return (
-    <div className="flex flex-wrap items-end gap-3">
+    <div className="flex flex-wrap items-end gap-3 rounded-lg border border-slate-200 bg-slate-100 p-4">
       <div className="w-64">
         <label className="text-xs font-medium text-muted-foreground">Search</label>
         <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="DocNo, candidate, receipt" />
@@ -49,7 +50,7 @@ export function DocumentFilters({ branches, showBranch, initial }: Props) {
               <SelectValue placeholder="All branches" />
             </SelectTrigger>
             <SelectContent>
-              {branches.map((branch) => (
+              {activeBranches.map((branch) => (
                 <SelectItem key={branch.id} value={branch.id}>
                   {branch.name}
                 </SelectItem>

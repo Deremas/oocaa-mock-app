@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { getSessionUserFromCookies } from "@/lib/auth";
 import { DocumentFilters } from "@/components/modules/documents/DocumentFilters";
 import { DocumentTable } from "@/components/modules/documents/DocumentTable";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -49,9 +50,9 @@ export default async function DocumentsPage({ searchParams }: { searchParams: Se
   const branches = await db.branch.findMany({ orderBy: { name: "asc" } });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-6xl mx-auto">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Documents</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">Documents</h1>
       </div>
       <DocumentFilters
         branches={branches}
@@ -64,17 +65,25 @@ export default async function DocumentsPage({ searchParams }: { searchParams: Se
           dateTo: dateTo ?? "",
         }}
       />
-      <DocumentTable
-        rows={documents.map((doc) => ({
-          id: doc.id,
-          docNo: doc.docNo,
-          candidateName: doc.candidateName,
-          branchName: doc.branch.name,
-          status: doc.status,
-          attachmentCount: (doc as unknown as { _count?: { attachments: number } })._count?.attachments ?? 0,
-          createdAt: doc.createdAt,
-        }))}
-      />
+      <Card>
+        <CardHeader>
+          <CardTitle>Documents</CardTitle>
+          <p className="text-sm text-slate-600">Search, filter, and review document submissions.</p>
+        </CardHeader>
+        <CardContent>
+          <DocumentTable
+            rows={documents.map((doc) => ({
+              id: doc.id,
+              docNo: doc.docNo,
+              candidateName: doc.candidateName,
+              branchName: doc.branch.name,
+              status: doc.status,
+              attachmentCount: (doc as unknown as { _count?: { attachments: number } })._count?.attachments ?? 0,
+              createdAt: doc.createdAt,
+            }))}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }

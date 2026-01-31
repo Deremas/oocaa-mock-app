@@ -22,17 +22,17 @@ async function main() {
     prisma.branch.upsert({
       where: { code: "ADDIS" },
       update: {},
-      create: { name: "Addis Ababa", code: "ADDIS" },
+      create: { name: "Addis Ababa", code: "ADDIS", isActive: true },
     }),
     prisma.branch.upsert({
       where: { code: "ADAMA" },
       update: {},
-      create: { name: "Adama", code: "ADAMA" },
+      create: { name: "Adama", code: "ADAMA", isActive: true },
     }),
     prisma.branch.upsert({
       where: { code: "JIMMA" },
       update: {},
-      create: { name: "Jimma", code: "JIMMA" },
+      create: { name: "Jimma", code: "JIMMA", isActive: true },
     }),
   ]);
 

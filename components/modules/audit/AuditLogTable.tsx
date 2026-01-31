@@ -7,8 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDate } from "@/components/common/format";
+import { Badge } from "@/components/ui/badge";
+import { auditActionBadgeClass } from "@/lib/ui/status";
 
-type Branch = { id: string; name: string };
+type Branch = { id: string; name: string; isActive?: boolean };
 type AuditRow = {
   id: string;
   action: string;
@@ -25,6 +27,7 @@ export function AuditLogTable({
   branches: Branch[];
   showBranch: boolean;
 }) {
+  const activeBranches = branches.filter((branch) => branch.isActive !== false);
   const [rows, setRows] = useState<AuditRow[]>([]);
   const [selected, setSelected] = useState<AuditRow | null>(null);
   const [filters, setFilters] = useState({
@@ -58,7 +61,7 @@ export function AuditLogTable({
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-3 md:grid-cols-6">
+      <div className="grid gap-3 rounded-lg border border-slate-200 bg-slate-100 p-4 md:grid-cols-6">
         <div>
           <label className="text-xs text-muted-foreground">Action</label>
           <Select value={filters.action} onValueChange={(value) => setFilters((f) => ({ ...f, action: value }))}>
@@ -100,7 +103,7 @@ export function AuditLogTable({
                 <SelectValue placeholder="All" />
               </SelectTrigger>
               <SelectContent>
-                {branches.map((branch) => (
+                {activeBranches.map((branch) => (
                   <SelectItem key={branch.id} value={branch.id}>
                     {branch.name}
                   </SelectItem>
@@ -151,7 +154,9 @@ export function AuditLogTable({
         <TableBody>
           {rows.map((row) => (
             <TableRow key={row.id}>
-              <TableCell>{row.action}</TableCell>
+              <TableCell>
+                <Badge className={auditActionBadgeClass(row.action)}>{row.action}</Badge>
+              </TableCell>
               <TableCell>{row.actorEmail ?? "-"}</TableCell>
               <TableCell>{row.entityType}</TableCell>
               <TableCell>{formatDate(row.createdAt)}</TableCell>

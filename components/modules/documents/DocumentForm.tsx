@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ClipboardList, Receipt, User } from "lucide-react";
 
 type Branch = { id: string; name: string };
 
@@ -74,7 +75,8 @@ export function DocumentForm({ branches }: { branches: Branch[] }) {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center gap-2">
+          <User className="h-4 w-4 text-blue-800" />
           <CardTitle>Candidate</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
@@ -109,7 +111,8 @@ export function DocumentForm({ branches }: { branches: Branch[] }) {
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center gap-2">
+          <ClipboardList className="h-4 w-4 text-blue-800" />
           <CardTitle>Assessment</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
@@ -136,7 +139,8 @@ export function DocumentForm({ branches }: { branches: Branch[] }) {
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center gap-2">
+          <Receipt className="h-4 w-4 text-green-800" />
           <CardTitle>Payment</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
@@ -164,7 +168,8 @@ export function DocumentForm({ branches }: { branches: Branch[] }) {
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center gap-2">
+          <Receipt className="h-4 w-4 text-blue-800" />
           <CardTitle>Attachments</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
@@ -195,8 +200,11 @@ export function DocumentForm({ branches }: { branches: Branch[] }) {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
         {error ? <p className="mr-auto text-sm text-red-600">{error}</p> : null}
+        <Button variant="outline" onClick={() => router.push("/documents")}>
+          Cancel
+        </Button>
         <Button onClick={submit} disabled={isPending}>
           {isPending ? "Saving..." : "Save Document"}
         </Button>

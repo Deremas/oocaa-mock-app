@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatCurrency, formatDate } from "@/components/common/format";
+import { statusBadgeClass } from "@/lib/ui/status";
 
 export default async function DocumentDetailPage({ params }: { params: { id: string } }) {
   const session = await getSessionUserFromCookies();
@@ -49,13 +50,15 @@ export default async function DocumentDetailPage({ params }: { params: { id: str
   const canEdit = session.role !== Role.AUDITOR && document.status === DocumentStatus.SUBMITTED;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-6xl mx-auto">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">{document.docNo}</h1>
           <p className="text-sm text-muted-foreground">{document.branch.name}</p>
         </div>
-        <Badge variant="outline">{document.status}</Badge>
+        <Badge className={statusBadgeClass(document.status)}>
+          {document.status}
+        </Badge>
       </div>
 
       <Tabs defaultValue="overview">

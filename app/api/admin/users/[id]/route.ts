@@ -26,6 +26,14 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     if (body.resetPassword) {
       data.passwordHash = await bcrypt.hash(body.resetPassword, 10);
     }
+    if (body.name) data.name = body.name;
+    if (body.email) data.email = body.email;
+    if (body.role) data.role = body.role;
+    if (body.branchId !== undefined) data.branchId = body.branchId;
+
+    if (body.role === Role.BRANCH_ADMIN && !data.branchId) {
+      return NextResponse.json({ message: "Branch is required for branch admins" }, { status: 400 });
+    }
 
     const updated = await db.user.update({
       where: { id: params.id },
@@ -45,6 +53,39 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     }
 
     return NextResponse.json(updated);
+  } catch (error) {
+    if (error instanceof HttpError) {
+      return NextResponse.json({ message: error.message }, { status: error.status });
+    }
+    return NextResponse.json({ message: "Invalid request" }, { status: 400 });
+  }
+}
+
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const session = await requireAuth(request);
+    requireRole(session, [Role.HQ_ADMIN]);
+
+    if (session.id === params.id) {
+      return NextResponse.json({ message: "Cannot delete own HQ account" }, { status: 400 });
+    }
+
+    const updated = await db.user.update({
+      where: { id: params.id },
+      data: { isActive: false },
+    });
+
+    await logAudit({
+      actorUserId: session.id,
+      actorEmail: session.email,
+      action: AuditAction.USER_DISABLED,
+      entityType: EntityType.USER,
+      entityId: updated.id,
+      branchId: updated.branchId,
+      detailsJson: { deleted: true },
+    });
+
+    return NextResponse.json({ ok: true });
   } catch (error) {
     if (error instanceof HttpError) {
       return NextResponse.json({ message: error.message }, { status: error.status });

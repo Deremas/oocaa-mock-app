@@ -9,8 +9,8 @@ export default async function ReportsPage() {
   const branches = await db.branch.findMany({ orderBy: { name: "asc" } });
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Reports</h1>
+    <div className="space-y-6 max-w-6xl mx-auto">
+      <h1 className="text-2xl font-semibold text-slate-900">Reports</h1>
       <ReportsSummary branches={branches} showBranch={session.role === Role.HQ_ADMIN} />
     </div>
   );

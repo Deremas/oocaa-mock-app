@@ -11,11 +11,12 @@ export default async function AuditPage() {
   const branches = await db.branch.findMany({ orderBy: { name: "asc" } });
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Audit Logs</h1>
+    <div className="space-y-6 max-w-6xl mx-auto">
+      <h1 className="text-2xl font-semibold text-slate-900">Audit Logs</h1>
       <Card>
         <CardHeader>
           <CardTitle>Recent Activity</CardTitle>
+          <p className="text-sm text-slate-600">Track logins, document actions, and system events.</p>
         </CardHeader>
         <CardContent>
           <AuditLogTable branches={branches} showBranch={session.role === Role.HQ_ADMIN} />

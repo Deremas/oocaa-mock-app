@@ -16,12 +16,12 @@ type AppShellProps = {
 export function AppShell({ children, user }: AppShellProps) {
   return (
     <div className="app-page flex min-h-screen">
-      <aside className="w-64 border-r bg-white px-4 py-6">
-        <Link href="/dashboard" className="text-xl font-semibold">
+      <aside className="w-64 bg-slate-900 px-4 py-6 text-white">
+        <Link href="/dashboard" className="text-xl font-semibold text-white">
           OOCAA DMS
         </Link>
-        <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Mock App</p>
-        <Separator className="my-4" />
+        <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">Mock App</p>
+        <Separator className="my-4 bg-white/10" />
         <Nav role={user.role} />
       </aside>
       <main className="flex-1">
@@ -31,7 +31,7 @@ export function AppShell({ children, user }: AppShellProps) {
             <p className="text-xs text-muted-foreground">{user.email}</p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
+            <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
               {user.role.replace("_", " ")}
             </span>
             <LogoutButton />

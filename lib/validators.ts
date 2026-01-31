@@ -51,4 +51,19 @@ export const userCreateSchema = z.object({
 export const userPatchSchema = z.object({
   isActive: z.boolean().optional(),
   resetPassword: z.string().min(6).optional(),
+  name: z.string().min(2).optional(),
+  email: z.string().email().optional(),
+  role: z.nativeEnum(Role).optional(),
+  branchId: z.string().nullable().optional(),
+});
+
+export const branchCreateSchema = z.object({
+  name: z.string().min(2),
+  code: z.string().min(2),
+});
+
+export const branchUpdateSchema = z.object({
+  name: z.string().min(2).optional(),
+  code: z.string().min(2).optional(),
+  isActive: z.boolean().optional(),
 });

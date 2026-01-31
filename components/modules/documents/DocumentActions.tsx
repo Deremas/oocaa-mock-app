@@ -48,6 +48,7 @@ export function DocumentActions({
               })
             }
             disabled={isPending}
+            variant="success"
           >
             Approve
           </Button>

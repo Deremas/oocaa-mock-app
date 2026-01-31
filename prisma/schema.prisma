@@ -50,6 +50,7 @@ model Branch {
   id        String   @id @default(cuid())
   name      String
   code      String   @unique
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   users     User[]
   documents Document[]
@@ -137,6 +138,8 @@ model DocumentVersion {
   createdAt      DateTime @default(now())
   document       Document @relation(fields: [documentId], references: [id])
   createdBy      User     @relation("VersionCreatedBy", fields: [createdByUserId], references: [id])
+
+  @@unique([documentId, versionNumber])
 }
 
 model AuditLog {

@@ -17,8 +17,8 @@ export default async function AdminUsersPage() {
   const branches = await db.branch.findMany({ orderBy: { name: "asc" } });
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Admin Users</h1>
+    <div className="space-y-6 max-w-6xl mx-auto">
+      <h1 className="text-2xl font-semibold text-slate-900">Admin Users</h1>
       <AdminUsersClient
         users={users.map((user) => ({
           id: user.id,
@@ -26,6 +26,7 @@ export default async function AdminUsersPage() {
           email: user.email,
           role: user.role,
           branchName: user.branch?.name ?? null,
+          branchId: user.branch?.id ?? null,
           isActive: user.isActive,
         }))}
         branches={branches}

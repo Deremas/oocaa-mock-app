@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDate } from "@/components/common/format";
+import { statusBadgeClass } from "@/lib/ui/status";
 
 type DocumentRow = {
   id: string;
@@ -22,7 +23,7 @@ export function DocumentTable({ rows }: { rows: DocumentRow[] }) {
           <TableHead>Candidate</TableHead>
           <TableHead>Branch</TableHead>
           <TableHead>Status</TableHead>
-          <TableHead>Attachments</TableHead>
+          <TableHead className="text-right">Attachments</TableHead>
           <TableHead>Created</TableHead>
           <TableHead>View</TableHead>
         </TableRow>
@@ -34,12 +35,14 @@ export function DocumentTable({ rows }: { rows: DocumentRow[] }) {
             <TableCell>{row.candidateName}</TableCell>
             <TableCell>{row.branchName}</TableCell>
             <TableCell>
-              <Badge variant="outline">{row.status}</Badge>
+              <Badge className={statusBadgeClass(row.status)}>{row.status}</Badge>
             </TableCell>
-            <TableCell>{row.attachmentCount ?? 0}</TableCell>
+            <TableCell className="text-right">
+              <Badge variant="secondary">{row.attachmentCount ?? 0}</Badge>
+            </TableCell>
             <TableCell>{formatDate(row.createdAt)}</TableCell>
             <TableCell>
-              <Link href={`/documents/${row.id}`} className="text-primary hover:underline">
+              <Link href={`/documents/${row.id}`} className="text-blue-800 hover:underline">
                 View
               </Link>
             </TableCell>
