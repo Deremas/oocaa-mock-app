@@ -53,7 +53,7 @@ export default async function DashboardPage() {
       <h1 className="text-2xl font-semibold text-slate-900">Dashboard</h1>
       <StatCards
         stats={[
-          { label: "Total (30 days)", value: totalDocs, type: "total" },
+          { label: "Total", value: totalDocs, type: "total" },
           { label: "Submitted", value: countByStatus(DocumentStatus.SUBMITTED), type: "submitted" },
           { label: "Reviewed", value: countByStatus(DocumentStatus.REVIEWED), type: "reviewed" },
           { label: "Approved", value: countByStatus(DocumentStatus.APPROVED), type: "approved" },
