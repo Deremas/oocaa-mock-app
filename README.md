@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OOCAA DMS Mock App
 
-## Getting Started
+Next.js App Router + Prisma + PostgreSQL mock document management system with RBAC and branch isolation.
 
-First, run the development server:
+## Stack
+- Next.js App Router (TypeScript strict)
+- PostgreSQL (Docker)
+- Prisma ORM + seed
+- JWT auth (HttpOnly cookie)
+- shadcn/ui + lucide-react
 
+## Demo Credentials
+- HQ Admin: `hq@oocaa.local` / `Passw0rd!`
+- Branch Admin (Adama): `adama@oocaa.local` / `Passw0rd!`
+- Auditor: `audit@oocaa.local` / `Passw0rd!`
+
+## Setup
+1) Start Postgres
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker-compose up -d
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2) Install dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3) Configure env
+```bash
+cp .env.example .env
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4) Prisma migrate + seed
+```bash
+npx prisma migrate dev
+npx prisma db seed
+```
 
-## Learn More
+5) Run app
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## App Notes
+- JWT stored in HttpOnly cookie `access_token`.
+- RBAC enforced server-side; auditors are read-only.
+- Branch isolation: branch admins see only their branch data.
+- Mandatory payment rule enforced for status changes to REVIEWED/APPROVED.
+- File uploads stored locally under `/uploads` (gitignored).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Demo Script
+1) Login as Branch Admin (adama@oocaa.local).
+2) Create a new document and upload a payment receipt.
+3) Mark the document as REVIEWED.
+4) Login as HQ Admin (hq@oocaa.local) and APPROVE or REJECT with reason.
+5) Visit Audit Logs and Reports to verify entries and totals.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Commands
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```

@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16
+    container_name: oocaa-postgres
+    environment:
+      POSTGRES_USER: oocaa
+      POSTGRES_PASSWORD: oocaa
+      POSTGRES_DB: oocaa_mock
+    ports:
+      - "5432:5432"
+    volumes:
+      - oocaa_pgdata:/var/lib/postgresql/data
+
+volumes:
+  oocaa_pgdata:

@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  HQ_ADMIN
+  BRANCH_ADMIN
+  AUDITOR
+}
+
+enum DocumentStatus {
+  SUBMITTED
+  REVIEWED
+  APPROVED
+  REJECTED
+}
+
+enum DocumentType {
+  ASSESSMENT_APPLICATION
+}
+
+enum AttachmentKind {
+  PAYMENT_RECEIPT
+  SUPPORTING
+}
+
+enum AuditAction {
+  LOGIN
+  DOCUMENT_CREATED
+  DOCUMENT_UPDATED
+  FILE_UPLOADED
+  STATUS_CHANGED
+  DOCUMENT_REJECTED
+  USER_CREATED
+  USER_DISABLED
+  USER_ENABLED
+}
+
+enum EntityType {
+  USER
+  DOCUMENT
+  ATTACHMENT
+}
+
+model Branch {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  createdAt DateTime @default(now())
+  users     User[]
+  documents Document[]
+  sequences DocSequence[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role
+  branchId     String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  branch       Branch?  @relation(fields: [branchId], references: [id])
+  documents    Document[] @relation("DocumentCreatedBy")
+  reviewedDocs Document[] @relation("DocumentReviewedBy")
+  approvedDocs Document[] @relation("DocumentApprovedBy")
+  attachments  Attachment[] @relation("AttachmentUploadedBy")
+  auditLogs    AuditLog[] @relation("AuditActor")
+  versions     DocumentVersion[] @relation("VersionCreatedBy")
+}
+
+model DocSequence {
+  id       String @id @default(cuid())
+  branchId String
+  year     Int
+  lastSeq  Int
+  branch   Branch @relation(fields: [branchId], references: [id])
+
+  @@unique([branchId, year])
+}
+
+model Document {
+  id                 String         @id @default(cuid())
+  docNo              String         @unique
+  type               DocumentType
+  status             DocumentStatus
+  branchId           String
+  candidateName      String
+  candidateIdNumber  String?
+  phone              String?
+  occupation         String
+  level              String
+  paymentReceiptNo   String?
+  paymentAmount      Int?
+  paymentDate        DateTime?
+  paymentMethod      String?
+  createdByUserId    String
+  reviewedByUserId   String?
+  approvedByUserId   String?
+  rejectReason       String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  branch             Branch         @relation(fields: [branchId], references: [id])
+  createdBy          User           @relation("DocumentCreatedBy", fields: [createdByUserId], references: [id])
+  reviewedBy         User?          @relation("DocumentReviewedBy", fields: [reviewedByUserId], references: [id])
+  approvedBy         User?          @relation("DocumentApprovedBy", fields: [approvedByUserId], references: [id])
+  attachments        Attachment[]
+  versions           DocumentVersion[]
+}
+
+model Attachment {
+  id             String         @id @default(cuid())
+  documentId     String
+  kind           AttachmentKind
+  originalName   String
+  storedName     String
+  mimeType       String
+  sizeBytes      Int
+  storagePath    String
+  uploadedByUserId String
+  createdAt      DateTime       @default(now())
+  document       Document       @relation(fields: [documentId], references: [id])
+  uploadedBy     User           @relation("AttachmentUploadedBy", fields: [uploadedByUserId], references: [id])
+}
+
+model DocumentVersion {
+  id             String   @id @default(cuid())
+  documentId     String
+  versionNumber  Int
+  snapshotJson   Json
+  createdByUserId String
+  createdAt      DateTime @default(now())
+  document       Document @relation(fields: [documentId], references: [id])
+  createdBy      User     @relation("VersionCreatedBy", fields: [createdByUserId], references: [id])
+}
+
+model AuditLog {
+  id          String      @id @default(cuid())
+  actorUserId String?
+  actorEmail  String?
+  action      AuditAction
+  entityType  EntityType
+  entityId    String?
+  branchId    String?
+  detailsJson Json
+  createdAt   DateTime    @default(now())
+  actor       User?       @relation("AuditActor", fields: [actorUserId], references: [id])
+}
